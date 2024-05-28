@@ -7,7 +7,9 @@ public class CreateTodoCommandValidator : AbstractValidator<CreateTodoCommand>
 {
     public CreateTodoCommandValidator()
     {
-        RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required!");
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .WithMessage("Name is required!");
     }
 }
 

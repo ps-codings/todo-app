@@ -1,7 +1,4 @@
-﻿using TodoApp.API.Abstractions;
-using TodoApp.API.Exceptions;
-
-namespace TodoApp.API.Todos.GetTodoById;
+﻿namespace TodoApp.API.Todos.GetTodoById;
 
 public record GetTodoByIdQuery(Guid Id) : IQuery<GetTodoByIdResult>;
 public record GetTodoByIdResult(TodoItem Todo);
@@ -20,7 +17,7 @@ internal class GetTodoByIdQueryHandler(TodoDb dbContext)
         {
             throw new NotFoundException(query.Id);
         }
-
+        
         return new GetTodoByIdResult(todo);
     }
 }

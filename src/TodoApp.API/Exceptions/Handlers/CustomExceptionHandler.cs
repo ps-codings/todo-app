@@ -1,10 +1,9 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TodoApp.API.Exceptions.Handlers;
 
-internal class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger)
+internal sealed class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger)
     : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(
@@ -14,17 +13,15 @@ internal class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger)
     {
         logger.LogError(
             "Error Message: {exceptionMessage}, Occurred at:{time}"
-            , exception.Message, DateTime.UtcNow);
+            , exception.Message, DateTime.UtcNow);     
 
-        int statusCode = GetStatusCodeFromException(exception);
-
-        httpContext.Response.StatusCode = statusCode;
+        httpContext.Response.StatusCode = GetStatusCodeFromException(exception);
 
         ProblemDetails problemDetails = new()
         {
             Title = exception.GetType().Name,
             Detail = exception.Message,
-            Status = statusCode,
+            Status = httpContext.Response.StatusCode,
             Instance = httpContext.Request.Path
         };
 
@@ -46,7 +43,6 @@ internal class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger)
     private int GetStatusCodeFromException(Exception exception) =>
         exception switch
         {
-            InternalServerException => StatusCodes.Status500InternalServerError,
             ValidationException => StatusCodes.Status400BadRequest,
             BadRequestException => StatusCodes.Status400BadRequest,
             NotFoundException => StatusCodes.Status404NotFound,
